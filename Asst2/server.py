@@ -9,27 +9,19 @@ s.bind((TCP_IP, TCP_PORT))
 s.listen(1)
 print('Server is listening at Port', TCP_IP)
 
-def notifyThatServerIsConnected(conn, addr):
-    print('Client Address:', addr)
-    print("Connection to Client Established")
-
-def showRequest(socket):
-    print("Client request:", socket.recv(1024).decode())
-
-def getCurrTime():
-    currTime = datetime.strftime(datetime.now(), '%Y/%m/%d %H:%M:%S')
-    response = "Current Date and Time: %s " % currTime
-    return response
-
-def sendResponseToClient(socket,response):
-    socket.send(response.encode())
-    print("Response has been sent to client")
-
 while 1:
-    socket, address = s.accept()
-    notifyThatServerIsConnected(socket,address)
-    showRequest(socket)
-    currDateTime = getCurrTime()
-    sendResponseToClient(s, currDateTime)
+    response = "Error: no valid data sent through"
+    conn, addr = s.accept()
+    print('Client Address: ' addr)
+    print("Connection to Client Established")
+    request = conn.recv(20)
+    print("Client request: ", request)
+    if request == "What is the current date and time?":
+        currTime = datetime.strftime(datetime.now(), '%Y/%m/%d %H:%M:%S')
+        response = "Current Date and Time: %s " % currTime
+    elif request == "exit":
+        conn.close()
+    conn.send(response)
+    print("Response has been sent to client")
 
 
