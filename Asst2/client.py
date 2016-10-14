@@ -1,6 +1,6 @@
 import socket
 
-TCP_IP = '10.0.2.15'
+TCP_IP = '192.168.56.1'
 TCP_PORT = 5005
 
 print ("Attempting to contact server at ",TCP_IP,":",TCP_PORT)
