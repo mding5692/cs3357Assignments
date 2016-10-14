@@ -8,11 +8,14 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.connect((TCP_IP, TCP_PORT))
 print ("Connection to Server Established")
 breakStr = "---------------------------------"
+msgStr = "Enter your message below: \n"
 print(breakStr)
 print("Instructions: Type 'What is the current date and time?' to get current time and date.")
 print("Else type 'exit' to stop server!")
 print(breakStr)
-message = input("Enter your message below: \n")
+message = input(msgStr)
+while message == "":
+	message = input(msgStr)
 s.send(message.encode('utf-8'))
 print("Request has been sent from client")
 response = s.recv(1024).decode('utf-8')
