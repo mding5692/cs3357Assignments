@@ -14,14 +14,15 @@ while 1:
     conn, addr = s.accept()
     print("Client Address: ", addr)
     print("Connection to Client Established...")
-    request = conn.recv(20)
+    request = conn.recv(1024).decode()
     print("Client request: ", request)
     if request == "What is the current date and time?":
         currTime = datetime.strftime(datetime.now(), '%Y/%m/%d %H:%M:%S')
         response = "Current Date and Time: %s " % currTime
     elif request == "exit":
+        print("Client sent request to stop server!")
         break
-    conn.send(response)
+    conn.send(response.encode())
     print("Response has been sent to client")
 conn.close()
 
