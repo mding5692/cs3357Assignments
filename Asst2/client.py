@@ -19,10 +19,10 @@ print("Instructions: Type 'What is the current date and time?' to get current ti
 print("Else type 'exit' to stop server!")
 print(breakStr)
 # Stores user input as message and validates input
-message = input(msgStr)
+message = raw_input(msgStr)
 # if message is blank, keeps prompting user
 while message == "":
-	message = input(msgStr)
+	message = raw_input(msgStr)
 # sends to server as utf-8 string
 s.send(message.encode('utf-8'))
 # indicates to user that request has been sent
