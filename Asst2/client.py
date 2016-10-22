@@ -1,3 +1,5 @@
+# For commandline - Run python client.py and follow instructions indicated below
+
 import socket
 
 # Used to configure server address and port for client to connect to
@@ -11,7 +13,13 @@ s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # Indicates to user that client is connected
 s.connect((TCP_IP, TCP_PORT))
 print ("Connection to Server Established")
+# INSTRUCTIONS FOR USER INPUT
 # Used to prompt user to ask question or else type exit to close the server
+# - User types What is the current date and time?
+# - Obtains response from server
+# - Else can type in exit
+# - Closes the server
+# - Else sends in error, and receives response from server saying that its invalid input
 breakStr = "---------------------------------"
 msgStr = "Enter your message below: \n"
 print(breakStr)

@@ -1,3 +1,5 @@
+# For commandline - type python server.py and then wait for client requests
+
 import socket
 # Uses datetime library to get current data and format it in response
 from datetime import datetime
