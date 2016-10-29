@@ -5,7 +5,7 @@ import socket
 from datetime import datetime
 
 # Server address and port used as configuration
-TCP_IP = '192.168.56.1'
+TCP_IP = '192.168.40.1'
 TCP_PORT = 5005
 
 # Creates socket using python socket library

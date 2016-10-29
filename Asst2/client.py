@@ -3,7 +3,7 @@
 import socket
 
 # Used to configure server address and port for client to connect to
-TCP_IP = '192.168.56.1'
+TCP_IP = '192.168.40.1'
 TCP_PORT = 5005
 
 # Indicates to user that client is sending request
