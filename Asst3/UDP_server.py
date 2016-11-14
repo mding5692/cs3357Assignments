@@ -15,8 +15,8 @@ sock = socket.socket(socket.AF_INET, # Internet
 sock.bind((UDP_IP, UDP_PORT))
 print("Server set-up and listening at: ", UDP_IP)
 
-while True:
-    #Receive Data
+while 1:
+    # Data is received from socket
     data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
     UDP_Packet = unpacker.unpack(data)
 
@@ -24,58 +24,58 @@ while True:
     print('received from:', addr)
     print('received message:', UDP_Packet)
 
-    # assigns variables to hold ack and sequence numbers to make it easy to reference later
-    ack = UDP_Packet[0]
-    seq = UDP_Packet[1]
-    app_data = UDP_Packet[2]
+    # uses references for the ack, seq, data and chksum
+    reqAck = UDP_Packet[0]
+    reqSeq = UDP_Packet[1]
+    reqData = UDP_Packet[2]
+    reqChksum = UDP_Packet[3]
 
     #Create the Checksum for comparison
-    values = (ack,seq,app_data)
+    values = (reqAck,reqSeq,reqData)
     packer = struct.Struct('I I 8s')
     packed_data = packer.pack(*values)
     chksum =  bytes(hashlib.md5(packed_data).hexdigest(), encoding='UTF-8')
 
     #Compare Checksums to test for corrupt data
-    if UDP_Packet[3] == chksum:
-        print('CheckSums Match, Packet OK')
-        print('Packet data: ', app_data.decode("utf-8"))
+    if reqChksum == chksum:
+        print('Chksum is correct, Request data: ', reqData.decode("utf-8"))
 
-        # Assigns different sequence value if its not corrupt
-        if seq == 1:
-            seq = 0
+        # Assigns different seq for response
+        if reqSeq == 0:
+            respSeq = 1
         else:
-            seq = 1
+            respSeq = 0
 
-        # Creates checksum for response
-        response = (ack,seq)
+        # Same ack sent back
+        respAck = reqAck
+
+        # Creates checksum for response and puts response into packet
+        response = (respAck,respSeq)
         UDP_Data = struct.Struct('I I')
         resp_data = UDP_Data.pack(*response)
         respChksum =  bytes(hashlib.md5(resp_data).hexdigest(), encoding='UTF-8')
-
-        # Puts response into UDP Packet
-        response = (ack,seq,respChksum)
+        response = (respAck,respSeq,respChksum)
         UDP_Data = struct.Struct('I I 32s')
         UDP_Packet = UDP_Data.pack(*response)
 
-        # Sends same Ack to receiver to show that it is not corrupted
+        # Sends same ACK to indicate not corrupt
         sock.sendto(UDP_Packet,addr)
     else:
+        # indicates that packet is corrupt
         print('Checksums Do Not Match, Packet Corrupt')
 
-        # Sends previous or different Ack to receiver to show that it is corrupted
-        if ack == 1:
-            ack = 0
+        # Sends previous ACK to represent NACK
+        if reqAck == 1:
+            respAck = 0
         else:
-            ack = 1
+            respAck = 1
 
-        # Creates checksum for response
-        response = (ack,seq)
+        # Creates checksum for response and puts into packet
+        response = (respAck,respSeq)
         UDP_Data = struct.Struct('I I')
         resp_data = UDP_Data.pack(*response)
         respChksum =  bytes(hashlib.md5(resp_data).hexdigest(), encoding='UTF-8')
-
-        # Puts response into UDP Packet
-        response = (ack,seq,respChksum)
+        response = (respAck,respSeq,respChksum)
         UDP_Data = struct.Struct('I I 32s')
         UDP_Packet = UDP_Packet_Data.pack(*response)
 
