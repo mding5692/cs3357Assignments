@@ -6,7 +6,7 @@ import hashlib
 
 UDP_IP = '127.0.0.1'
 UDP_PORT = 5005
-unpacker = struct.Struct('I I 8s 32s')
+unpacker = struct.Struct('I I 32s')
 
 print('UDP target IP:', UDP_IP)
 print('UDP target port:', UDP_PORT)
@@ -38,20 +38,20 @@ for data in packets:
 	#Send the UDP Packet
 	sock = socket.socket(socket.AF_INET, # Internet
 	                     socket.SOCK_DGRAM) # UDP
+	print("Sent data:", values)
 	sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
 	print("UDP Packet has been sent.")
 
 	# Receives response from receiver
 	resp, server_addr = sock.recvfrom(4096)
 
-
 	# Unpacks response and gets ACK
 	RESP_Packet = unpacker.unpack(resp)
-	print("Packet sent back from receiver: ", RESP_Packet)
-	respAck = RESP_Packet[0]
+	print("Data received from server: ", RESP_Packet)
+	respSeq = RESP_Packet[1]
 
 	# Keeps looping and sending previous data if corrupted
-	while respAck != ack: 
+	while respSeq != seq: 
 		# indicate to user that packet being resent
 		print("Data was corrupted")
 		print("Resending previous packet")
@@ -65,11 +65,11 @@ for data in packets:
 		RESP_Packet = unpacker.unpack(resp)
 		respAck = RESP_Packet[0]
 
-	# Assigns correct sequence number after checking if previous sent data is not corrupt
-	correctRespSeq = RESP_Packet[1]
-
 	# Switches up ack and seq for next packet
-	seq = correctRespSeq
+	if seq == 0:
+		seq = 1
+	else:
+		seq = 0
 
 # Close connection at the end
 sock.close()

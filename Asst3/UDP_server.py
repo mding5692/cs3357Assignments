@@ -40,23 +40,18 @@ while 1:
     if reqChksum == chksum:
         print('Chksum is correct, Request data: ', reqData.decode("utf-8"))
 
-        # Assigns different seq for response
-        if reqSeq == 0:
-            respSeq = 1
-        else:
-            respSeq = 0
-
-        # Same ack sent back
-        respAck = reqAck
+        # Different ack sent back
+        respAck = 1
+        respSeq = reqSeq
 
         # Creates checksum for response and puts response into packet
-        response = (respAck,respSeq,reqData)
+        response = (respAck,respSeq)
         print("Response sent: ", response)
-        UDP_Data = struct.Struct('I I 8s')
+        UDP_Data = struct.Struct('I I')
         resp_data = UDP_Data.pack(*response)
         respChksum =  bytes(hashlib.md5(resp_data).hexdigest(), encoding='UTF-8')
-        response = (respAck,respSeq,reqData,respChksum)
-        UDP_Data = struct.Struct('I I 8s 32s')
+        response = (respAck,respSeq,respChksum)
+        UDP_Data = struct.Struct('I I 32s')
         UDP_Packet = UDP_Data.pack(*response)
 
         # Sends same ACK to indicate not corrupt
@@ -66,19 +61,19 @@ while 1:
         print('Checksums Do Not Match, Packet Corrupt')
 
         # Sends previous ACK to represent NACK
-        if reqAck == 1:
-            respAck = 0
+        if reqSeq == 1:
+            respSeq = 0
         else:
-            respAck = 1
+            respSeq = 1
 
         # Creates checksum for response and puts into packet
-        response = (respAck,respSeq,reqData)
+        response = (respAck,respSeq)
         print("Response sent: ", response)
-        UDP_Data = struct.Struct('I I 8s')
+        UDP_Data = struct.Struct('I I')
         resp_data = UDP_Data.pack(*response)
         respChksum =  bytes(hashlib.md5(resp_data).hexdigest(), encoding='UTF-8')
-        response = (respAck,respSeq,reqData,respChksum)
-        UDP_Data = struct.Struct('I I 8s 32s')
+        response = (respAck,respSeq,respChksum)
+        UDP_Data = struct.Struct('I I 32s')
         UDP_Packet = UDP_Packet_Data.pack(*response)
 
         # Sends different ACK to indicate corrupted data
