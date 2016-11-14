@@ -43,17 +43,17 @@ for raw_data in raw_data_list:
 
 	# Receives response from receiver
 	resp, server_addr = sock.recvfrom(4096)
-	print("Packet sent back from receiver: ", resp)
 
 	# Unpacks response to see values contained
 	RESP_Packet = unpacker.unpack(resp)
+	print("Packet sent back from receiver: ", RESP_Packet)
 
 	# Assigns ack to variable currAck for comparison
-	currAck = ack
-	respAck = RESP_Packet[0]
+	currSeq = seq
+	respSeq = RESP_Packet[1]
 
 	# Checks ack response and sends new packets based on that information
-	while respAck != currAck: 
+	while respSeq != currSeq: 
 		print("Different ack recieved - corrupted data sent")
 		sock = socket.socket(socket.AF_INET, # Internet
 	                     socket.SOCK_DGRAM) # UDP
@@ -66,15 +66,11 @@ for raw_data in raw_data_list:
 		RESP_Packet = unpacker.unpack(resp)
 		respAck = RESP_Packet[0]
 
-	# Assigns correct sequence number after checking if previous sent data is not corrupt
-	correctRespSeq = RESP_Packet[1]
-
-	# Switches up ack and seq for next packet
-	seq = correctRespSeq
-	if currAck == 0:
-		ack = 1
+	# Switches up seq for next packet
+	if seq == 0:
+		seq = 1
 	else:
-		ack = 0
+		seq = 0
 
 # Close connection at the end
 sock.close()
