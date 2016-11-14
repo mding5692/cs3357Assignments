@@ -50,12 +50,13 @@ while 1:
         respAck = reqAck
 
         # Creates checksum for response and puts response into packet
-        response = (respAck,respSeq)
-        UDP_Data = struct.Struct('I I')
+        response = (respAck,respSeq,reqData)
+        print("Response sent: ", response)
+        UDP_Data = struct.Struct('I I 8s')
         resp_data = UDP_Data.pack(*response)
         respChksum =  bytes(hashlib.md5(resp_data).hexdigest(), encoding='UTF-8')
-        response = (respAck,respSeq,respChksum)
-        UDP_Data = struct.Struct('I I 32s')
+        response = (respAck,respSeq,reqData,respChksum)
+        UDP_Data = struct.Struct('I I 8s 32s')
         UDP_Packet = UDP_Data.pack(*response)
 
         # Sends same ACK to indicate not corrupt
@@ -71,12 +72,13 @@ while 1:
             respAck = 1
 
         # Creates checksum for response and puts into packet
-        response = (respAck,respSeq)
-        UDP_Data = struct.Struct('I I')
+        response = (respAck,respSeq,reqData)
+        print("Response sent: ", response)
+        UDP_Data = struct.Struct('I I 8s')
         resp_data = UDP_Data.pack(*response)
         respChksum =  bytes(hashlib.md5(resp_data).hexdigest(), encoding='UTF-8')
-        response = (respAck,respSeq,respChksum)
-        UDP_Data = struct.Struct('I I 32s')
+        response = (respAck,respSeq,reqData,respChksum)
+        UDP_Data = struct.Struct('I I 8s 32s')
         UDP_Packet = UDP_Packet_Data.pack(*response)
 
         # Sends different ACK to indicate corrupted data

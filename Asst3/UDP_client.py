@@ -6,7 +6,7 @@ import hashlib
 
 UDP_IP = '127.0.0.1'
 UDP_PORT = 5005
-unpacker = struct.Struct('I I 32s')
+unpacker = struct.Struct('I I 8s 32s')
 
 print('UDP target IP:', UDP_IP)
 print('UDP target port:', UDP_PORT)
@@ -43,10 +43,11 @@ for data in packets:
 
 	# Receives response from receiver
 	resp, server_addr = sock.recvfrom(4096)
-	print("Packet sent back from receiver: ", resp)
+
 
 	# Unpacks response and gets ACK
 	RESP_Packet = unpacker.unpack(resp)
+	print("Packet sent back from receiver: ", RESP_Packet)
 	respAck = RESP_Packet[0]
 
 	# Keeps looping and sending previous data if corrupted
@@ -69,10 +70,6 @@ for data in packets:
 
 	# Switches up ack and seq for next packet
 	seq = correctRespSeq
-	if ack == 0:
-		ack = 1
-	else:
-		ack = 0
 
 # Close connection at the end
 sock.close()
