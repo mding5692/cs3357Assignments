@@ -39,6 +39,7 @@ for raw_data in raw_data_list:
 	sock = socket.socket(socket.AF_INET, # Internet
 	                     socket.SOCK_DGRAM) # UDP
 	sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
+	print("Sending Packet: ", values)
 	print("UDP Packet has been sent.")
 
 	# Receives response from receiver
@@ -57,10 +58,11 @@ for raw_data in raw_data_list:
 		print("Different ack recieved - corrupted data sent")
 		sock = socket.socket(socket.AF_INET, # Internet
 	                     socket.SOCK_DGRAM) # UDP
+		print("Resent packet: ", UDP_Packet)
 		sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
 		print("UDP Packet has been resent.") # sends packet again if previous packet was corrupted
 		resp, server_addr = sock.recvfrom(4096) # receives new check
-		print("Packet sent back from receiver ", resp)
+		print("Packet received from receiver ", resp)
 
 		# Unpacks response to see values contained
 		RESP_Packet = unpacker.unpack(resp)

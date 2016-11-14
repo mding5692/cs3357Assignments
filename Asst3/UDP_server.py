@@ -51,6 +51,7 @@ while True:
 
         # Puts response into UDP Packet
         response = (respAck,seq,respChksum)
+        print("Response sent: ", response)
         UDP_Data = struct.Struct('I I 32s')
         UDP_Packet = UDP_Data.pack(*response)
 
@@ -73,6 +74,7 @@ while True:
 
         # Puts response into UDP Packet
         response = (respAck,seq,respChksum)
+        print("Response sent: ", response)
         UDP_Data = struct.Struct('I I 32s')
         UDP_Packet = UDP_Packet_Data.pack(*response)
 
