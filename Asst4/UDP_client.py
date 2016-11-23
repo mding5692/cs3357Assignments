@@ -7,6 +7,7 @@ import hashlib
 UDP_IP = '127.0.0.1'
 UDP_PORT = 5005
 unpacker = struct.Struct('I I 32s')
+timeOutValue = 9.0 # Specifies the time it takes to timeout
 
 print('UDP target IP:', UDP_IP)
 print('UDP target port:', UDP_PORT)
@@ -18,7 +19,7 @@ packets = ['NCC-1701','NCC-1664','NCC-1017']
 ack = 0
 seq = 0
 
-# Loops through raw_data_list and sends each raw_data
+# Sends each data as packet
 for data in packets:
 
 	# Converts raw_data from string into bytes
@@ -38,12 +39,25 @@ for data in packets:
 	#Send the UDP Packet
 	sock = socket.socket(socket.AF_INET, # Internet
 	                     socket.SOCK_DGRAM) # UDP
-	print("Sent data:", values)
-	sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
-	print("UDP Packet has been sent.")
 
-	# Receives response from receiver
-	resp, server_addr = sock.recvfrom(4096)
+	while True:
+		# Sends the UDP Packet
+		print("Sent data:", values)
+		sock.sendto(UDP_Packet, (UDP_IP, UDP_PORT))
+		print("UDP Packet has been sent.")
+
+		# Sets timeout and receives response from receiver
+		try:
+			sock.settimeout(timeOutValue)
+			resp, server_addr = sock.recvfrom(4096)
+			print("Received response")
+			if resp is not None: # breaks out of loop if we received it on time
+				break
+		# Else grabs exception from settimeout
+		except socket.timeout:
+			print("ERROR: Timer expired!")
+			print("Sending packet again...")
+			continue
 
 	# Unpacks response and gets ACK
 	RESP_Packet = unpacker.unpack(resp)
