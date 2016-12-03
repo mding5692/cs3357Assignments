@@ -39,7 +39,7 @@ for data in packets:
 	#Send the UDP Packet
 	sock = socket.socket(socket.AF_INET, # Internet
 	                     socket.SOCK_DGRAM) # UDP
-
+	# Uses socket library's timeout function to handle timeouts
 	while True:
 		# Sends the UDP Packet
 		print("Sent data:", values)
